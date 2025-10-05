@@ -10,17 +10,18 @@ function LoginForm({ onLoginSuccess }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMessage("");
     try {
       const res = await axios.post("http://localhost:8080/users/login", { email, password });
-      const token = res.data?.token;
-      if (token) {
+      const { token, role, email: returnedEmail } = res.data || {};
+      if (token && role) {
         if (onLoginSuccess) {
-          onLoginSuccess(token);
+          onLoginSuccess({ token, role, email: returnedEmail || email });
         }
-        setMessage("Login successful! Redirecting...");
+        setMessage(`Logged in as ${role === "ADMIN" ? "Admin" : "User"}. Redirecting...`);
         navigate("/dashboard");
       } else {
-        setMessage("No token returned from server");
+        setMessage("Unexpected response from server");
       }
     } catch (err) {
       setMessage("Invalid credentials");

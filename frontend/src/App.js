@@ -5,22 +5,37 @@ import LoginForm from "./LoginForm";
 import Dashboard from "./Dashboard";
 
 function App() {
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [session, setSession] = useState(() => {
+    const saved = localStorage.getItem("session");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (err) {
+        console.warn("Failed to parse saved session", err);
+      }
+    }
+    const legacyToken = localStorage.getItem("token");
+    if (legacyToken) {
+      return { token: legacyToken, role: "USER" };
+    }
+    return null;
+  });
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
+    if (session) {
+      localStorage.setItem("session", JSON.stringify(session));
     } else {
-      localStorage.removeItem("token");
+      localStorage.removeItem("session");
     }
-  }, [token]);
+    localStorage.removeItem("token");
+  }, [session]);
 
-  const handleLoginSuccess = (newToken) => {
-    setToken(newToken);
+  const handleLoginSuccess = (newSession) => {
+    setSession(newSession);
   };
 
   const handleLogout = () => {
-    setToken(null);
+    setSession(null);
   };
 
   return (
@@ -30,7 +45,7 @@ function App() {
           <Link className="navbar-brand" to="/">Event Booking</Link>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav ml-auto">
-              {!token && (
+              {!session && (
                 <>
                   <li className="nav-item">
                     <Link className="nav-link" to="/register">Register</Link>
@@ -40,9 +55,11 @@ function App() {
                   </li>
                 </>
               )}
-              {token && (
+              {session && (
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                  <Link className="nav-link" to="/dashboard">
+                    {session.role === "ADMIN" ? "Admin Dashboard" : "Dashboard"}
+                  </Link>
                 </li>
               )}
             </ul>
@@ -52,19 +69,27 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={token ? <Navigate to="/dashboard" replace /> : <h2>Welcome to Event Booking System</h2>}
+            element={session ? <Navigate to="/dashboard" replace /> : <h2>Welcome to Event Booking System</h2>}
           />
           <Route
             path="/register"
-            element={!token ? <RegisterForm /> : <Navigate to="/dashboard" replace />}
+            element={!session ? <RegisterForm /> : <Navigate to="/dashboard" replace />}
           />
           <Route
             path="/login"
-            element={!token ? <LoginForm onLoginSuccess={handleLoginSuccess} /> : <Navigate to="/dashboard" replace />}
+            element={!session ? (
+              <LoginForm onLoginSuccess={handleLoginSuccess} />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )}
           />
           <Route
             path="/dashboard"
-            element={token ? <Dashboard token={token} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+            element={session ? (
+              <Dashboard session={session} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )}
           />
         </Routes>
       </div>

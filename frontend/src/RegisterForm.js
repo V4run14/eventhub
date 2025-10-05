@@ -4,15 +4,21 @@ import axios from "axios";
 function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("USER");
   const [message, setMessage] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage("");
     try {
-      await axios.post("http://localhost:8080/users/register", { email, password });
-      setMessage("Registration successful!");
+      await axios.post("http://localhost:8080/users/register", { email, password, role });
+      setMessage(`Registration successful! Account created as ${role.toLowerCase()}.`);
+      setEmail("");
+      setPassword("");
+      setRole("USER");
     } catch (err) {
-      setMessage("Error: " + (err.response?.data?.message || err.message));
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message;
+      setMessage(`Error: ${errorMessage}`);
     }
   };
 
@@ -40,6 +46,18 @@ function RegisterForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </div>
+
+        <div className="form-group mb-3">
+          <label>Account Type</label>
+          <select
+            className="form-control"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          >
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+          </select>
         </div>
 
         <button type="submit" className="btn btn-primary w-100">Register</button>

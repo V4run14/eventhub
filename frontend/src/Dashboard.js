@@ -1,8 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Dashboard({ token, onLogout }) {
+function Dashboard({ session, onLogout }) {
   const navigate = useNavigate();
+  const { role, email } = session;
 
   const handleLogout = () => {
     if (onLogout) {
@@ -13,15 +14,14 @@ function Dashboard({ token, onLogout }) {
 
   return (
     <div className="card p-4 shadow-sm">
-      <h3>Dashboard</h3>
-      {token ? (
-        <>
-          <p>Welcome back! You are logged in.</p>
-          <button className="btn btn-danger mt-3" onClick={handleLogout}>Logout</button>
-        </>
+      <h3>{role === "ADMIN" ? "Admin Dashboard" : "User Dashboard"}</h3>
+      <p className="mb-3">Welcome {email || "back"}! You are signed in as {role.toLowerCase()}.</p>
+      {role === "ADMIN" ? (
+        <p className="text-muted">Admin features coming soon: manage events, schedules, and bookings.</p>
       ) : (
-        <p>Please login to access your dashboard.</p>
+        <p className="text-muted">User features coming soon: browse events and book tickets.</p>
       )}
+      <button className="btn btn-danger mt-3" onClick={handleLogout}>Logout</button>
     </div>
   );
 }

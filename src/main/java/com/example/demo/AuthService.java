@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -22,7 +23,7 @@ public class AuthService {
         User user = new User();
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(password));
-        user.setRole(role != null ? role : "USER");
+        user.setRole(UserRole.fromString(role));
         return userRepository.save(user);
     }
 

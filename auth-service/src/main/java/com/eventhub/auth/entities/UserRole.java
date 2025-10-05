@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.eventhub.auth.entities;
 
 public enum UserRole {
     ADMIN,

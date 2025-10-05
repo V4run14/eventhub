@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.eventhub.auth.services;
 
+import com.eventhub.auth.entities.UserRole;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;

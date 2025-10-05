@@ -1,5 +1,9 @@
-package com.example.demo;
+package com.eventhub.auth.controllers;
 
+import com.eventhub.auth.entities.User;
+import com.eventhub.auth.entities.UserRole;
+import com.eventhub.auth.services.AuthService;
+import com.eventhub.auth.services.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

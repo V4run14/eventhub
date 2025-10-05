@@ -1,11 +1,14 @@
-package com.example.demo;
+package com.eventhub.auth.services;
 
+import com.eventhub.auth.entities.User;
+import com.eventhub.auth.entities.UserRole;
+import com.eventhub.auth.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
+@Service("authDomainService")
 public class AuthService {
 
     private final UserRepository userRepository;

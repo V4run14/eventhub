@@ -1,5 +1,8 @@
-package com.example.demo;
+package com.eventhub.auth.services;
 
+import com.eventhub.auth.entities.User;
+import com.eventhub.auth.entities.UserRole;
+import com.eventhub.auth.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

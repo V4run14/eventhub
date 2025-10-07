@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-ro
 import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
 import Dashboard from "./Dashboard";
+import EventListPage from "./events/EventListPage";
+import EventDetailsPage from "./events/EventDetailsPage";
+import EventFormPage from "./events/EventFormPage";
 
 function App() {
   const [session, setSession] = useState(() => {
@@ -38,14 +41,17 @@ function App() {
     setSession(null);
   };
 
+  const isAuthenticated = Boolean(session);
+  const isAdmin = session?.role === "ADMIN";
+
   return (
     <Router>
       <div className="container mt-5">
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
           <Link className="navbar-brand" to="/">Event Booking</Link>
           <div className="collapse navbar-collapse">
-            <ul className="navbar-nav ml-auto">
-              {!session && (
+            <ul className="navbar-nav ms-auto">
+              {!isAuthenticated && (
                 <>
                   <li className="nav-item">
                     <Link className="nav-link" to="/register">Register</Link>
@@ -55,12 +61,17 @@ function App() {
                   </li>
                 </>
               )}
-              {session && (
-                <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard">
-                    {session.role === "ADMIN" ? "Admin Dashboard" : "Dashboard"}
-                  </Link>
-                </li>
+              {isAuthenticated && (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/events">Events</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/dashboard">
+                      {isAdmin ? "Admin Dashboard" : "Dashboard"}
+                    </Link>
+                  </li>
+                </>
               )}
             </ul>
           </div>
@@ -69,15 +80,15 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={session ? <Navigate to="/dashboard" replace /> : <h2>Welcome to Event Booking System</h2>}
+            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <h2>Welcome to Event Booking System</h2>}
           />
           <Route
             path="/register"
-            element={!session ? <RegisterForm /> : <Navigate to="/dashboard" replace />}
+            element={!isAuthenticated ? <RegisterForm /> : <Navigate to="/dashboard" replace />}
           />
           <Route
             path="/login"
-            element={!session ? (
+            element={!isAuthenticated ? (
               <LoginForm onLoginSuccess={handleLoginSuccess} />
             ) : (
               <Navigate to="/dashboard" replace />
@@ -85,8 +96,40 @@ function App() {
           />
           <Route
             path="/dashboard"
-            element={session ? (
+            element={isAuthenticated ? (
               <Dashboard session={session} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )}
+          />
+          <Route
+            path="/events"
+            element={isAuthenticated ? (
+              <EventListPage session={session} />
+            ) : (
+              <Navigate to="/login" replace />
+            )}
+          />
+          <Route
+            path="/events/new"
+            element={isAuthenticated && isAdmin ? (
+              <EventFormPage session={session} />
+            ) : (
+              <Navigate to={isAuthenticated ? "/events" : "/login"} replace />
+            )}
+          />
+          <Route
+            path="/events/:id/edit"
+            element={isAuthenticated && isAdmin ? (
+              <EventFormPage session={session} />
+            ) : (
+              <Navigate to={isAuthenticated ? "/events" : "/login"} replace />
+            )}
+          />
+          <Route
+            path="/events/:id"
+            element={isAuthenticated ? (
+              <EventDetailsPage session={session} />
             ) : (
               <Navigate to="/login" replace />
             )}

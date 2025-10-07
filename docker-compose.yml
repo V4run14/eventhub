@@ -1,4 +1,4 @@
-services:
+﻿services:
   postgres:
     image: postgres:16
     environment:
@@ -9,6 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d authdb -U authuser"]
       interval: 10s
@@ -25,6 +26,22 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/authdb
+      SPRING_DATASOURCE_USERNAME: authuser
+      SPRING_DATASOURCE_PASSWORD: authpass
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - eventhub-net
+
+  event-service:
+    build:
+      context: .
+      dockerfile: event-service/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eventdb
       SPRING_DATASOURCE_USERNAME: authuser
       SPRING_DATASOURCE_PASSWORD: authpass
     depends_on:

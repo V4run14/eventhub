@@ -5,6 +5,8 @@ WORKDIR /workspace
 COPY pom.xml ./
 COPY auth-service/pom.xml auth-service/pom.xml
 COPY auth-service/src auth-service/src
+COPY event-service/pom.xml event-service/pom.xml
+COPY event-service/src event-service/src
 
 RUN mvn -pl auth-service -am -DskipTests package
 

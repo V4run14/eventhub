@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const AUTH_BASE_URL = process.env.REACT_APP_AUTH_SERVICE_URL || "http://localhost:8080";
+
 function LoginForm({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,7 +14,7 @@ function LoginForm({ onLoginSuccess }) {
     e.preventDefault();
     setMessage("");
     try {
-      const res = await axios.post("http://localhost:8080/users/login", { email, password });
+      const res = await axios.post(`${AUTH_BASE_URL}/users/login`, { email, password });
       const { token, role, email: returnedEmail } = res.data || {};
       if (token && role) {
         if (onLoginSuccess) {

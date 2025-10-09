@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const AUTH_BASE_URL = process.env.REACT_APP_AUTH_SERVICE_URL || "http://localhost:8080";
+
 function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,7 +13,7 @@ function RegisterForm() {
     e.preventDefault();
     setMessage("");
     try {
-      await axios.post("http://localhost:8080/users/register", { email, password, role });
+      await axios.post(`${AUTH_BASE_URL}/users/register`, { email, password, role });
       setMessage(`Registration successful! Account created as ${role.toLowerCase()}.`);
       setEmail("");
       setPassword("");
